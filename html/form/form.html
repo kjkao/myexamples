@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<script>
+var frt_colors = ["red", "green", "cherry", "purple", "yellow", "orange", "brown"]
+var frt_sizes = ["small", "middle", "large"]
+var frt_info = {
+    "Apple" : {
+        "colors" : ["red", "green"],
+        "size" : "middle",
+        "price" : 12,
+    },
+    "Banana" : {
+        "colors" : ["yellow", "green"],
+        "size" : "middle",
+        "price" : 34,
+    },
+    "Cherry" : {
+        "colors" : ["cherry"],
+        "size" : "small",
+        "price" : 56,
+    },
+    "Grape" : {
+        "colors" : ["purple"],
+        "size" : "small",
+        "price" : 78,
+    },
+    "Grapefruit" : {
+        "colors" : ["yellow"],
+        "size" : "large",
+        "price" : 90,
+    },
+    "Honeydew Melon" : {
+        "colors" : ["yellow"],
+        "size" : "large",
+        "price" : 10,
+    },
+    "Lemon" : {
+        "colors" : ["yellow", "green"],
+        "size" : "middle",
+        "price" : 32,
+    },
+    "Orange" : {
+        "colors" : ["orange"],
+        "size" : "middle",
+        "price" : 54,
+    },
+    "Kiwi Fruit" : {
+        "colors" : ["brown"],
+        "size" : "middle",
+        "price" : 76,
+    },
+    "Papaya" : {
+        "colors" : ["green"],
+        "size" : "large",
+        "price" : 98,
+    },
+    "Pineapple" : {
+        "colors" : ["yellow"],
+        "size" : "large",
+        "price" : 25,
+    },
+    "Starfruit" : {
+        "colors" : ["yellow"],
+        "size" : "large",
+        "price" : 47,
+    },
+    "Watermelon" : {
+        "colors" : ["green"],
+        "size" : "large",
+        "price" : 69,
+    }
+}
+
+function onFrtNameInput() {
+    var i;
+    var val = document.getElementById('frt_name_input').value;
+    if (val && frt_info[val]) {
+        jsonToForm(frt_info[val], false);
+    } else {
+        var frt_div = document.getElementById('frt_div');
+        removeAllChild(frt_div);
+    }
+};
+
+function formCheckbox(elem, name, items, checked, editable) {
+    for (i = 0; i < items.length; i++) {
+        var x = document.createElement("INPUT");
+        x.disabled = ! editable;
+        x.checked = checked.indexOf(items[i]) != -1;
+        if (x.checked) {
+            x.disabled = false;
+        }
+        x.setAttribute("type", "checkbox");
+        x.setAttribute("id", name + "_" + i);
+        x.name = name;
+        x.value = items[i];
+        elem.appendChild(x);
+        var x = document.createElement("LABEL");
+        var t = document.createTextNode(items[i]);
+        x.setAttribute("for", name + "_" + i);
+        x.appendChild(t);
+        x.appendChild(document.createTextNode(" "));
+        elem.appendChild(x);
+    }
+}
+
+function formRadio(elem, name, items, checked, editable) {
+    for (i = 0; i < items.length; i++) {
+        var x = document.createElement("INPUT");
+        x.disabled = ! editable;
+        x.checked = checked.indexOf(items[i]) != -1;
+        if (x.checked) {
+            x.disabled = false;
+        }
+        x.setAttribute("type", "radio");
+        x.setAttribute("id", name + "_" + i);
+        x.name = name;
+        x.value = items[i];
+        elem.appendChild(x);
+        var x = document.createElement("LABEL");
+        var t = document.createTextNode(items[i]);
+        x.setAttribute("for", name + "_" + i);
+        x.appendChild(t);
+        x.appendChild(document.createTextNode(" "));
+        elem.appendChild(x);
+    }
+}
+
+function removeAllChild(_node) {
+    while (_node.firstChild) {
+        _node.removeChild(_node.lastChild);
+    }
+}
+
+function jsonToForm(json, editable) {
+    var frt_form = document.getElementById('frt_form');
+    var frt_div = document.getElementById('frt_div');
+    var table = document.createElement('TABLE');
+    removeAllChild(frt_div);
+    table.border = 1;
+    var tableBody = document.createElement('TBODY');
+    table.appendChild(tableBody);
+
+    var tr = document.createElement('TR');
+    var td = document.createElement('TD');
+    td.appendChild(document.createTextNode("Price"));
+    tr.appendChild(td);
+    var td = document.createElement('TD');
+    td.appendChild(document.createTextNode(json.price));
+    tr.appendChild(td);
+    tableBody.appendChild(tr);
+
+    var tr = document.createElement('TR');
+    var td = document.createElement('TD');
+    td.appendChild(document.createTextNode("Size"));
+    tr.appendChild(td);
+    var td = document.createElement('TD');
+    formRadio(td, "size", frt_sizes, json.size, editable);
+    tr.appendChild(td);
+    tableBody.appendChild(tr);
+
+    var tr = document.createElement('TR');
+    var td = document.createElement('TD');
+    td.appendChild(document.createTextNode("Colors"));
+    tr.appendChild(td);
+    var td = document.createElement('TD');
+    formCheckbox(td, "colors", frt_colors, json.colors, editable);
+    tr.appendChild(td);
+    tableBody.appendChild(tr);
+
+    frt_div.appendChild(table);
+    if (editable) {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "submit");
+        frt_div.appendChild(x);
+    } else {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "button");
+        x.value = "Update";
+        x.onclick = function() { jsonToForm(json, true); } ;
+        frt_div.appendChild(x);
+    }
+}
+
+function updateDataList(dlid, dlitems) {
+    var dl = document.getElementById(dlid);
+    while (dl.firstChild) {
+            dl.removeChild(dl.firstChild);
+    }
+    dlitems.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item;
+        dl.appendChild(option);
+    });
+};
+
+window.onload = function() {
+    infos = frt_info
+    names = [];
+    for (var k in infos) {
+        names.push(k);
+    }
+    updateDataList("frt_name", names);
+};
+
+</script>
+
+<body data-model-type="hudson.plugins.view.dashboard.Dashboard" id="jenkins" class="yui-skin-sam one-column jenkins-2.164.3" data-version="2.164.3">
+<form id="frt_form" name="frt_form">
+<table>
+  <tr>
+    <td>User Name: </td>
+    <td>
+<input id="frt_name_input" list="frt_name" name="frt_name" onblur="onFrtNameInput()" size="60" />
+<datalist id="frt_name"></datalist>
+    </td>
+  </tr>
+</table>
+<div id="frt_div">
+</div>
+</form>
+</body>
+</html>
